@@ -1,0 +1,41 @@
+{
+  "info": {
+    "name": "Lab05 - JSONPlaceholder (нэмэлт)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "GET /users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "https://jsonplaceholder.typicode.com/users",
+          "protocol": "https",
+          "host": [
+            "jsonplaceholder",
+            "typicode",
+            "com"
+          ],
+          "path": [
+            "users"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"Статус код 200\", function () { pm.response.to.have.status(200); });",
+              "pm.test(\"Хариу массив\", function () { pm.expect(pm.response.json()).to.be.an(\"array\"); });",
+              "pm.test(\"Эхний хэрэглэгчийн нэр Leanne Graham\", function () { pm.expect(pm.response.json()[0].name).to.eql(\"Leanne Graham\"); });"
+            ]
+          }
+        }
+      ],
+      "response": []
+    }
+  ]
+}
