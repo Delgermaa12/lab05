@@ -1,0 +1,150 @@
+newman
+
+Lab05 - Registration API (FAIL)
+
+❏ T01 Happy path: идэвхтэй оюутан, урьдач хангасан → 201 OK
+↳ Setup: оюутан T01_S (active, үзсэн=['CS201'])
+  PUT http://localhost:3000/students/T01_S [200 OK, 178B, 16ms]
+
+↳ Setup: хичээл T01_C (урьдач=['CS201'])
+  PUT http://localhost:3000/courses/T01_C [200 OK, 178B, 3ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [201 Created, 203B, 2ms]
+  1. Статус код 200
+  ✓  result = OK
+  ✓  registrationID тоо байна
+
+❏ T02 Оюутан байхгүй → ERROR_NO_STUDENT
+↳ Setup: хичээл T02_C (урьдач=[])
+  PUT http://localhost:3000/courses/T02_C [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 192B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_NO_STUDENT
+
+❏ T03 Идэвхгүй оюутан → ERROR_INACTIVE_STUDENT
+↳ Setup: оюутан T03_S (inactive, үзсэн=['CS201'])
+  PUT http://localhost:3000/students/T03_S [200 OK, 178B, 1ms]
+
+↳ Setup: хичээл T03_C (урьдач=['CS201'])
+  PUT http://localhost:3000/courses/T03_C [200 OK, 178B, 2ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 198B, 1ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_INACTIVE_STUDENT
+
+❏ T04 Хичээл байхгүй → ERROR_NO_COURSE
+↳ Setup: оюутан T04_S (active, үзсэн=['CS201'])
+  PUT http://localhost:3000/students/T04_S [200 OK, 178B, 2ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 191B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_NO_COURSE
+
+❏ T05 Урьдач огт үзээгүй → ERROR_PREREQUISITES (missing=[CS201])
+↳ Setup: оюутан T05_S (active, үзсэн=[])
+  PUT http://localhost:3000/students/T05_S [200 OK, 178B, 1ms]
+
+↳ Setup: хичээл T05_C (урьдач=['CS201'])
+  PUT http://localhost:3000/courses/T05_C [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 215B, 1ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_PREREQUISITES
+  ✓  missing = [CS201]
+
+❏ T06 Урьдач зарим нь дутуу → ERROR_PREREQUISITES (missing=[CS202])
+↳ Setup: оюутан T06_S (active, үзсэн=['CS201'])
+  PUT http://localhost:3000/students/T06_S [200 OK, 178B, 1ms]
+
+↳ Setup: хичээл T06_C (урьдач=['CS201', 'CS202'])
+  PUT http://localhost:3000/courses/T06_C [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 215B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_PREREQUISITES
+  ✓  missing = [CS202]
+
+❏ T07 Давхар алдаа: идэвхгүй оюутан + байхгүй хичээл → ERROR_INACTIVE_STUDENT
+↳ Setup: оюутан T07_S (inactive, үзсэн=[])
+  PUT http://localhost:3000/students/T07_S [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 198B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_INACTIVE_STUDENT
+
+❏ T08 Давхар алдаа: оюутан байхгүй + хичээл байхгүй → ERROR_NO_STUDENT
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 192B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_NO_STUDENT
+
+❏ T09 Давхар алдаа: идэвхгүй оюутан + урьдач дутуу → ERROR_INACTIVE_STUDENT
+↳ Setup: оюутан T09_S (inactive, үзсэн=[])
+  PUT http://localhost:3000/students/T09_S [200 OK, 178B, 2ms]
+
+↳ Setup: хичээл T09_C (урьдач=['CS201'])
+  PUT http://localhost:3000/courses/T09_C [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [200 OK, 198B, 2ms]
+  ✓  Статус код 200
+  ✓  result = ERROR_INACTIVE_STUDENT
+
+❏ T10 Хязгаар: урьдач нөхцөлгүй хичээл + хоосон coursesTaken → 201 OK
+↳ Setup: оюутан T10_S (active, үзсэн=[])
+  PUT http://localhost:3000/students/T10_S [200 OK, 178B, 1ms]
+
+↳ Setup: хичээл T10_C (урьдач=[])
+  PUT http://localhost:3000/courses/T10_C [200 OK, 178B, 1ms]
+
+↳ POST /registrations
+  POST http://localhost:3000/registrations [201 Created, 203B, 1ms]
+  ✓  Статус код 201
+  ✓  result = OK
+
+❏ T11 Хязгаар: courseID талбар дутуу → 400 ERROR_BAD_REQUEST
+↳ POST /registrations
+  POST http://localhost:3000/registrations [400 Bad Request, 202B, 2ms]
+  ✓  Статус код 400
+  ✓  result = ERROR_BAD_REQUEST
+
+❏ T12 Хязгаар: буруу JSON → 400 ERROR_BAD_JSON
+↳ POST /registrations
+  POST http://localhost:3000/registrations [400 Bad Request, 199B, 2ms]
+  ✓  Статус код 400
+  ✓  result = ERROR_BAD_JSON
+
+┌─────────────────────────┬─────────────────┬─────────────────┐
+│                         │        executed │          failed │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              iterations │               1 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│                requests │              27 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│            test-scripts │              12 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│      prerequest-scripts │               0 │               0 │
+├─────────────────────────┼─────────────────┼─────────────────┤
+│              assertions │              27 │               1 │
+├─────────────────────────┴─────────────────┴─────────────────┤
+│ total run duration: 335ms                                   │
+├─────────────────────────────────────────────────────────────┤
+│ total data received: 647B (approx)                          │
+├─────────────────────────────────────────────────────────────┤
+│ average response time: 2ms [min: 1ms, max: 16ms, s.d.: 2ms] │
+└─────────────────────────────────────────────────────────────┘
+
+[31m  # [39m[31m failure        [39m[31m detail                                                                                   [39m
+[90m    [39m[90m                [39m[90m                                                                                          [39m
+ 1.  AssertionError  Статус код 200                                                                           
+                     expected response to have status code 200 but got 201                                    
+                     at assertion:0 in test-script                                                            
+                     inside "T01 Happy path: идэвхтэй оюутан, урьдач хангасан → 201 OK / POST /registrations" 
